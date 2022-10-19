@@ -1,0 +1,49 @@
+name: MATLAB CI starter workflow
+
+on:
+  push:
+    branches: [ $default-branch ]
+  pull_request:
+    branches: [ $default-branch ]
+
+jobs:
+  build:
+    name: Lorem Ipsum
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Check out
+        uses: actions/checkout@v3
+
+      # Sets up MATLAB on the GitHub Actions runner
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v1
+
+      # Executes any MATLAB script, function, or statement
+      - name: Run script
+        uses: matlab-actions/run-command@v1
+        with:
+          command: myscript
+
+      # Run tests authored using the MATLAB unit testing framework/Simulink Test and generate artifacts
+      - name: Run MATLAB tests and generate artifacts
+        uses: matlab-actions/run-tests@v1
+        with:
+          source-folder: code
+          test-results-junit: test-results/results.xml
+          code-coverage-cobertura: code-coverage/coverage.xml
+
+      - name: Upload test results artifact
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: test-restuls
+          path: test-results/results.xml
+
+      - name: Upload code coverage artifact
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: code-coverage
+          path: code-coverage/coverage.xml
